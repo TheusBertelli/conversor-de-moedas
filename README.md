@@ -31,7 +31,7 @@ Não é necessário criar conta na Frankfurter, configurar `.env` ou fornecer um
 
 1. Digite um valor maior que zero. `10,50` e `10.50` representam o mesmo valor. Não use separadores de milhar, símbolos de moeda ou notação científica.
 2. Escolha as moedas de origem e destino. A lista vem da API e pode ser pesquisada pelo código ou nome.
-3. Toque em **Converter valor**. A consulta só começa depois da validação dos campos.
+3. Toque em **Converter**. A consulta só começa depois da validação dos campos.
 4. Confira o resultado, a taxa e a data de referência. O botão de inversão troca a direção para uma nova consulta.
 
 É possível salvar pares na estrela e selecioná-los novamente na área de favoritos. As últimas 10 conversões aparecem no histórico, que pode ser limpo. Favoritos e histórico ficam apenas na memória da sessão; fechar ou recarregar o app apaga esses dados.
@@ -53,17 +53,20 @@ src/
   views/
     ConverterScreen.js
     CurrencyPicker.js
+    ConversionResult.js
+    ConversionHistory.js
+    colors.js
 tests/
 ```
 
-| Camada | Responsabilidade |
-| --- | --- |
-| Model | Faz as requisições, verifica o HTTP e valida o formato dos dados recebidos. |
+| Camada    | Responsabilidade                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Model     | Faz as requisições, verifica o HTTP e valida o formato dos dados recebidos.                                                 |
 | ViewModel | Guarda os estados, valida os campos, coordena as consultas e calcula `valor × taxa`. Também controla histórico e favoritos. |
-| View | Renderiza campos, seletores, carregamento, erros e resultado. Encaminha as ações ao ViewModel. |
-| `App.js` | Integra a tela principal aos componentes de inicialização do aplicativo. |
+| View      | Renderiza campos, seletores, carregamento, erros e resultado. Encaminha as ações ao ViewModel.                              |
+| `App.js`  | Integra a tela principal aos componentes de inicialização do aplicativo.                                                    |
 
-Para alterar a aparência de um botão, edite a View. Para mudar uma regra de entrada, edite `conversion.js`. Para mudar o acesso à API, edite o Model. A View não faz `fetch`.
+Para alterar a aparência de um botão, edite a View. Para mudar uma regra de entrada, edite `conversion.js`. Para mudar o acesso à API, edite o Model. A View não faz `fetch`. O resultado e o histórico têm componentes próprios, e as cores compartilhadas ficam em `colors.js`.
 
 O aplicativo usa a API v2:
 
@@ -77,12 +80,15 @@ Cada requisição tem um limite de 15 segundos. O Model distingue falha de conex
 ## Verificação
 
 ```bash
+npm run format:check
 npm run lint
 npm test
 npm run build:web
 ```
 
-`npm run check` executa os três comandos em sequência. Para desenvolver os testes, use `npm run test:watch`.
+`npm run check` executa os quatro comandos em sequência. A suíte de Model, ViewModel e formatação contém 78 testes; os testes de interface têm 16 cenários, divididos entre celular e desktop. Para desenvolver os testes, use `npm run test:watch`.
+
+O ESLint verifica os padrões de JavaScript e React. O Prettier mantém aspas simples, vírgulas finais e quebra de linha consistente. Execute `npm run format` para formatar os arquivos antes de commitar. As responsabilidades seguem o MVVM, com nomes descritivos e componentes separados por função.
 
 Os testes em `tests/` cobrem validação, formatação, contrato da API, erros, cancelamento, conversão, histórico e favoritos. As requisições são simuladas nos testes para exercitar cenários sem depender da disponibilidade da Frankfurter. Isso não substitui a verificação de uma consulta real nem a execução em dispositivo Android ou iOS.
 
@@ -104,7 +110,16 @@ Para verificar o acesso à API real, sem respostas simuladas, use Node 24 e exec
 npm run test:api
 ```
 
-A integração contínua em `.github/workflows/ci.yml` executa lint, testes, build web e os testes de interface a cada push em `main` ou pull request. A consulta à API real fica separada para não depender de um serviço externo em cada execução.
+A integração contínua em `.github/workflows/ci.yml` executa verificação de formatação, lint, testes, build web e os testes de interface a cada push em `main` ou pull request. A consulta à API real fica separada para não depender de um serviço externo em cada execução.
+
+## Interface e referências
+
+O layout segue a simplicidade das páginas do Google: fundo branco, conteúdo centralizado, bordas cinza e controles azuis. O nome Câmbio usa letras coloridas, sem reproduzir o logotipo do Google. Campos, seletores e botões continuam feitos com componentes do React Native; o Material Web foi usado como referência visual, não como dependência.
+
+Referências consultadas:
+
+- Material Design: [campos de texto](https://github.com/material-components/material-web/blob/main/docs/components/text-field.md), [botões](https://github.com/material-components/material-web/blob/main/docs/components/button.md) e [papéis de cor](https://github.com/material-components/material-web/blob/main/docs/theming/color.md).
+- React: [funções retornadas por hooks personalizados](https://react.dev/reference/react/useCallback#optimizing-a-custom-hook).
 
 ## Capturas de tela
 
@@ -113,6 +128,5 @@ Capturas da versão web em largura mobile e desktop, usando respostas controlada
 ![Conversão em largura mobile](docs/screenshots/conversao-mobile.png)
 
 ![Conversão em largura desktop](docs/screenshots/conversao-desktop.png)
-
 
 As instruções específicas desta máquina estão em [docs/ambiente-nuvem.md](docs/ambiente-nuvem.md).
