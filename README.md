@@ -114,3 +114,5 @@ Capturas da versão web em largura mobile e desktop, usando respostas controlada
 
 ![Conversão em largura desktop](docs/screenshots/conversao-desktop.png)
 
+
+As instruções específicas desta máquina estão em [docs/ambiente-nuvem.md](docs/ambiente-nuvem.md).
