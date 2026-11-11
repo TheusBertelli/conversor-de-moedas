@@ -5,8 +5,18 @@
     "version": "1.0.0",
     "orientation": "default",
     "userInterfaceStyle": "light",
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.theusbertelli.conversordemoedas" },
-    "android": { "package": "com.theusbertelli.conversordemoedas" },
-    "web": { "name": "Câmbio de bolso", "lang": "pt-BR" }
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.theusbertelli.conversordemoedas"
+    },
+    "android": {
+      "package": "com.theusbertelli.conversordemoedas"
+    },
+    "web": {
+      "name": "Câmbio de bolso",
+      "lang": "pt-BR",
+      "favicon": "./assets/favicon.png"
+    },
+    "icon": "./assets/icon.png"
   }
 }
