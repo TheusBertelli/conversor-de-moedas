@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Câmbio de bolso",
+    "slug": "conversor-de-moedas",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.theusbertelli.conversordemoedas" },
+    "android": { "package": "com.theusbertelli.conversordemoedas" },
+    "web": { "name": "Câmbio de bolso", "lang": "pt-BR" }
+  }
+}
