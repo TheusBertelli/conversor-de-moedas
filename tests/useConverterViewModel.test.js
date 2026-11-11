@@ -13,7 +13,10 @@ const rate = { base: 'USD', quote: 'BRL', rate: 5.5, date: '2026-11-10' };
 const deferred = () => {
   let resolve;
   let reject;
-  const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+  const promise = new Promise((yes, no) => {
+    resolve = yes;
+    reject = no;
+  });
   return { promise, resolve, reject };
 };
 
@@ -58,14 +61,17 @@ test('falha ao carregar moedas e permite tentar novamente', async () => {
   expect(result.current.currencies).toHaveLength(3);
 });
 
-test.each(['', '0', '-10', 'abc', '1.000,50'])('não consulta a API para valor inválido %s', async (value) => {
-  const { result } = await ready();
-  await act(() => result.current.setAmount(value));
-  await act(async () => result.current.convert());
-  expect(getRate).not.toHaveBeenCalled();
-  expect(result.current.validationError).toBeTruthy();
-  expect(result.current.converting).toBe(false);
-});
+test.each(['', '0', '-10', 'abc', '1.000,50'])(
+  'não consulta a API para valor inválido %s',
+  async (value) => {
+    const { result } = await ready();
+    await act(() => result.current.setAmount(value));
+    await act(async () => result.current.convert());
+    expect(getRate).not.toHaveBeenCalled();
+    expect(result.current.validationError).toBeTruthy();
+    expect(result.current.converting).toBe(false);
+  },
+);
 
 test('não consulta a API para moedas iguais ou não disponíveis', async () => {
   const { result } = await ready();
@@ -83,10 +89,18 @@ test('converte decimal com a taxa recebida, sem arredondar o valor calculado', a
   const { result } = await ready();
   await act(() => result.current.setAmount('10,50'));
   await act(async () => result.current.convert());
-  expect(getRate).toHaveBeenCalledWith('USD', 'BRL', expect.objectContaining({ signal: expect.anything() }));
+  expect(getRate).toHaveBeenCalledWith(
+    'USD',
+    'BRL',
+    expect.objectContaining({ signal: expect.anything() }),
+  );
   expect(result.current.result).toMatchObject({
-    amount: 10.5, base: 'USD', quote: 'BRL', converted: 10.5 * 5.123456,
-    rate: 5.123456, date: '2026-11-10',
+    amount: 10.5,
+    base: 'USD',
+    quote: 'BRL',
+    converted: 10.5 * 5.123456,
+    rate: 5.123456,
+    date: '2026-11-10',
   });
   expect(result.current.history).toEqual([result.current.result]);
 });
@@ -96,10 +110,16 @@ test('expõe carregamento, bloqueia cliques simultâneos e encerra ao concluir',
   getRate.mockReturnValueOnce(pending.promise);
   const { result } = await ready();
   let request;
-  await act(() => { request = result.current.convert(); result.current.convert(); });
+  await act(() => {
+    request = result.current.convert();
+    result.current.convert();
+  });
   expect(result.current.converting).toBe(true);
   expect(getRate).toHaveBeenCalledTimes(1);
-  await act(async () => { pending.resolve(rate); await request; });
+  await act(async () => {
+    pending.resolve(rate);
+    await request;
+  });
   expect(result.current.converting).toBe(false);
 });
 
@@ -125,14 +145,24 @@ test('descarta resposta antiga depois de alterar campos e concluir outra consult
   const { result } = await ready();
   let oldRequest;
   let recentRequest;
-  await act(() => { oldRequest = result.current.convert(); });
+  await act(() => {
+    oldRequest = result.current.convert();
+  });
   const oldSignal = getRate.mock.calls[0][2].signal;
   await act(() => result.current.setAmount('20'));
   expect(oldSignal.aborted).toBe(true);
   expect(result.current.converting).toBe(false);
-  await act(() => { recentRequest = result.current.convert(); });
-  await act(async () => { recent.resolve(rate); await recentRequest; });
-  await act(async () => { old.resolve({ ...rate, rate: 99 }); await oldRequest; });
+  await act(() => {
+    recentRequest = result.current.convert();
+  });
+  await act(async () => {
+    recent.resolve(rate);
+    await recentRequest;
+  });
+  await act(async () => {
+    old.resolve({ ...rate, rate: 99 });
+    await oldRequest;
+  });
   expect(result.current.result.amount).toBe(20);
   expect(result.current.result.converted).toBe(110);
   expect(result.current.history).toHaveLength(1);
@@ -180,11 +210,16 @@ test('aborta a consulta quando a tela é desmontada', async () => {
   getRate.mockReturnValueOnce(pending.promise);
   const { result, unmount } = await ready();
   let request;
-  await act(() => { request = result.current.convert(); });
+  await act(() => {
+    request = result.current.convert();
+  });
   const signal = getRate.mock.calls[0][2].signal;
   await unmount();
   expect(signal.aborted).toBe(true);
-  await act(async () => { pending.resolve(rate); await request; });
+  await act(async () => {
+    pending.resolve(rate);
+    await request;
+  });
 });
 
 test('não inicia conversão enquanto a lista de moedas está carregando', async () => {

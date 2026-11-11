@@ -16,7 +16,15 @@ module.exports = defineConfig({
   },
   projects: [
     { name: 'desktop', use: { browserName: 'chromium', viewport: { width: 1280, height: 900 } } },
-    { name: 'mobile', use: { browserName: 'chromium', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
+    {
+      name: 'mobile',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
   ],
   webServer: {
     command: 'npx serve dist --listen tcp://127.0.0.1:4173 --no-clipboard',

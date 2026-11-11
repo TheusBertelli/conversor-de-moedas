@@ -43,7 +43,9 @@ async function selectCurrency(page, side, code, name) {
   await expect(page.getByRole('textbox', { name: 'Buscar moeda', exact: true })).not.toBeVisible();
 }
 
-test('converte decimal, mostra taxa e data e registra capturas da interface', async ({ page }, testInfo) => {
+test('converte decimal, mostra taxa e data e registra capturas da interface', async ({
+  page,
+}, testInfo) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const requests = await mockApi(page);
@@ -56,11 +58,15 @@ test('converte decimal, mostra taxa e data e registra capturas da interface', as
   await expect(page.getByText('10/11/2026', { exact: true })).toBeVisible();
   expect(requests.rates).toHaveLength(1);
   expect(requests.rates[0]).toBe('https://api.frankfurter.dev/v2/rate/USD/BRL');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
   await page.getByText('Data de referência', { exact: true }).scrollIntoViewIfNeeded();
   const filename = `conversao-${testInfo.project.name}.png`;
-  const path = process.env.UPDATE_SCREENSHOTS === '1'
-    ? `docs/screenshots/${filename}` : testInfo.outputPath(filename);
+  const path =
+    process.env.UPDATE_SCREENSHOTS === '1'
+      ? `docs/screenshots/${filename}`
+      : testInfo.outputPath(filename);
   await page.screenshot({ path, fullPage: true });
   expect(errors).toEqual([]);
 });
@@ -84,7 +90,9 @@ test('bloqueia valores inválidos e moedas iguais sem consultar a taxa', async (
   await amount.fill('10.50');
   await selectCurrency(page, 'Para', 'USD', 'United States Dollar');
   await convert.click();
-  await expect(page.getByRole('alert')).toHaveText('Escolha moedas diferentes para fazer a conversão.');
+  await expect(page.getByRole('alert')).toHaveText(
+    'Escolha moedas diferentes para fazer a conversão.',
+  );
   expect(requests.rates).toHaveLength(0);
 });
 
@@ -109,7 +117,9 @@ test('inverte o par e seleciona e remove favoritos', async ({ page }) => {
   const requests = await mockApi(page);
   await openReady(page);
   await page.getByRole('button', { name: 'Salvar par nos favoritos', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Usar favorito USD para BRL', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Usar favorito USD para BRL', exact: true }),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'Inverter moedas', exact: true }).click();
   await expect(page.getByRole('button', { name: 'De: BRL', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Para: USD', exact: true })).toBeVisible();
@@ -120,7 +130,9 @@ test('inverte o par e seleciona e remove favoritos', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'De: USD', exact: true })).toBeVisible();
   await expect(page.getByText('1 BRL = 5,3214 USD', { exact: true })).not.toBeVisible();
   await page.getByRole('button', { name: 'Remover par dos favoritos', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Usar favorito USD para BRL', exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Usar favorito USD para BRL', exact: true }),
+  ).toHaveCount(0);
 });
 
 test('mantém histórico separado do resultado e permite limpá-lo', async ({ page }) => {
@@ -140,7 +152,8 @@ test('mantém histórico separado do resultado e permite limpá-lo', async ({ pa
 
 test('recupera falha de conexão na lista de moedas', async ({ page }) => {
   const requests = await mockApi(page, {
-    onCurrencies: (route, count) => count === 1 ? route.abort('failed') : route.fulfill({ json: currencies }),
+    onCurrencies: (route, count) =>
+      count === 1 ? route.abort('failed') : route.fulfill({ json: currencies }),
   });
   await page.goto('/');
   await expect(page.getByRole('alert')).toContainText('Não foi possível conectar à Frankfurter.');
@@ -153,9 +166,10 @@ test('recupera falha de conexão na lista de moedas', async ({ page }) => {
 
 test('limpa resultado após erro HTTP e permite nova conversão', async ({ page }) => {
   const requests = await mockApi(page, {
-    onRate: (route, count) => count === 2
-      ? route.fulfill({ status: 503, json: { message: 'Service unavailable' } })
-      : route.fulfill({ json: responseFor(route.request().url()) }),
+    onRate: (route, count) =>
+      count === 2
+        ? route.fulfill({ status: 503, json: { message: 'Service unavailable' } })
+        : route.fulfill({ json: responseFor(route.request().url()) }),
   });
   await openReady(page);
   const convert = page.getByRole('button', { name: 'Converter valor', exact: true });
@@ -171,13 +185,19 @@ test('limpa resultado após erro HTTP e permite nova conversão', async ({ page 
   expect(requests.rates).toHaveLength(3);
 });
 
-test('mostra carregamento, bloqueia clique duplicado e descarta consulta cancelada', async ({ page }) => {
+test('mostra carregamento, bloqueia clique duplicado e descarta consulta cancelada', async ({
+  page,
+}) => {
   let releaseOldRequest;
-  const oldRequest = new Promise((resolve) => { releaseOldRequest = resolve; });
+  const oldRequest = new Promise((resolve) => {
+    releaseOldRequest = resolve;
+  });
   const requests = await mockApi(page, {
     onRate: async (route, count) => {
       if (count === 1) await oldRequest;
-      return route.fulfill({ json: { ...responseFor(route.request().url()), rate: count === 1 ? 99 : 5.3214 } });
+      return route.fulfill({
+        json: { ...responseFor(route.request().url()), rate: count === 1 ? 99 : 5.3214 },
+      });
     },
   });
   await openReady(page);

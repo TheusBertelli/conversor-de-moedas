@@ -35,9 +35,15 @@ async function request(path, signal) {
     });
 
     if (!response.ok) {
-      const message = response.status === 404
-        ? 'Não há taxa disponível para esse par de moedas. Escolha outro par.'
-        : `A Frankfurter não conseguiu atender à consulta (HTTP ${response.status}). Tente novamente.`;
+      let message = `A Frankfurter não conseguiu atender à consulta (HTTP ${response.status}). Tente novamente.`;
+
+      if (response.status === 404) {
+        message =
+          path === '/currencies'
+            ? 'Não foi possível carregar a lista de moedas (HTTP 404). Tente novamente.'
+            : 'Não há taxa disponível para esse par de moedas. Escolha outro par.';
+      }
+
       throw new FrankfurterError(message, 'http');
     }
 
@@ -46,7 +52,10 @@ async function request(path, signal) {
       data = await response.json();
     } catch (error) {
       if (controller.signal.aborted) throw error;
-      throw new FrankfurterError('A Frankfurter enviou uma resposta que não é um JSON válido. Tente novamente.', 'json');
+      throw new FrankfurterError(
+        'A Frankfurter enviou uma resposta que não é um JSON válido. Tente novamente.',
+        'json',
+      );
     }
 
     if (controller.signal.aborted) throw abortError();
@@ -54,10 +63,16 @@ async function request(path, signal) {
   } catch (error) {
     if (signal?.aborted) throw abortError();
     if (timedOut) {
-      throw new FrankfurterError('A consulta demorou mais que o esperado. Verifique sua conexão e tente novamente.', 'timeout');
+      throw new FrankfurterError(
+        'A consulta demorou mais que o esperado. Verifique sua conexão e tente novamente.',
+        'timeout',
+      );
     }
     if (error instanceof FrankfurterError) throw error;
-    throw new FrankfurterError('Não foi possível conectar à Frankfurter. Verifique sua conexão e tente novamente.', 'network');
+    throw new FrankfurterError(
+      'Não foi possível conectar à Frankfurter. Verifique sua conexão e tente novamente.',
+      'network',
+    );
   } finally {
     clearTimeout(timeout);
     signal?.removeEventListener('abort', cancel);
@@ -65,7 +80,10 @@ async function request(path, signal) {
 }
 
 function invalidResponse() {
-  return new FrankfurterError('A Frankfurter retornou dados incompletos ou inesperados. Tente novamente.', 'schema');
+  return new FrankfurterError(
+    'A Frankfurter retornou dados incompletos ou inesperados. Tente novamente.',
+    'schema',
+  );
 }
 
 function validDate(value) {
@@ -79,14 +97,22 @@ export async function getCurrencies({ signal } = {}) {
   if (!Array.isArray(data) || data.length === 0) throw invalidResponse();
 
   const seen = new Set();
-  return data.map((currency) => {
-    if (!currency || !CURRENCY_CODE.test(currency.iso_code) ||
-        typeof currency.name !== 'string' || !currency.name.trim() || seen.has(currency.iso_code)) {
-      throw invalidResponse();
-    }
-    seen.add(currency.iso_code);
-    return { code: currency.iso_code, name: currency.name.trim() };
-  }).sort((a, b) => a.code.localeCompare(b.code));
+  return data
+    .map((currency) => {
+      if (
+        !currency ||
+        !CURRENCY_CODE.test(currency.iso_code) ||
+        typeof currency.name !== 'string' ||
+        !currency.name.trim() ||
+        seen.has(currency.iso_code)
+      ) {
+        throw invalidResponse();
+      }
+
+      seen.add(currency.iso_code);
+      return { code: currency.iso_code, name: currency.name.trim() };
+    })
+    .sort((a, b) => a.code.localeCompare(b.code));
 }
 
 export async function getRate(base, quote, { signal } = {}) {
@@ -95,10 +121,22 @@ export async function getRate(base, quote, { signal } = {}) {
   }
 
   const data = await request(`/rate/${base}/${quote}`, signal);
-  if (!data || data.base !== base || data.quote !== quote ||
-      typeof data.rate !== 'number' || !Number.isFinite(data.rate) || data.rate <= 0 || !validDate(data.date)) {
+  if (
+    !data ||
+    data.base !== base ||
+    data.quote !== quote ||
+    typeof data.rate !== 'number' ||
+    !Number.isFinite(data.rate) ||
+    data.rate <= 0 ||
+    !validDate(data.date)
+  ) {
     throw invalidResponse();
   }
 
-  return { base: data.base, quote: data.quote, rate: data.rate, date: data.date };
+  return {
+    base: data.base,
+    quote: data.quote,
+    rate: data.rate,
+    date: data.date,
+  };
 }
