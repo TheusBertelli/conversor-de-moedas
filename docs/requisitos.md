@@ -4,20 +4,20 @@ Este documento relaciona os requisitos do enunciado “Aplicativo de Conversão 
 
 ## Entrega e arquitetura
 
-| Requisito                                                 | Implementação ou instrução                                                                                         |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| React Native com JavaScript e Expo                        | `package.json`, `app.json`, `index.js` e `App.js`; Node 24 em `.nvmrc`.                                            |
-| Estrutura simples em MVVM                                 | Pastas `src/models`, `src/viewmodels` e `src/views`.                                                               |
-| Inicialização e integração da tela                        | `App.js`.                                                                                                          |
-| Model independente da interface                           | `src/models/frankfurter.js`: requisições, HTTP, JSON e validação dos dados.                                        |
-| View sem requisições ou cálculo de conversão              | `ConverterScreen.js`, `CurrencyPicker.js`, `ConversionResult.js` e `ConversionHistory.js`: renderização e eventos. |
-| ViewModel com React Hooks                                 | `useConverterViewModel.js`: estados, efeitos, validação e coordenação.                                             |
-| Regras e formatação separadas da tela                     | `src/viewmodels/conversion.js`.                                                                                    |
-| Convenções de código                                      | ESLint e Prettier; `npm run format` aplica a formatação e `npm run format:check` verifica.                         |
-| Cores compartilhadas da interface                         | `src/views/colors.js`.                                                                                             |
-| Instruções de instalação, navegador e plataformas nativas | `README.md`.                                                                                                       |
-| Código no GitHub                                          | Repositório `TheusBertelli/conversor-de-moedas`; commits e envio são verificados à parte.                          |
-| Capturas de tela                                          | `docs/screenshots/conversao-mobile.png` e `conversao-desktop.png`; a legenda no README informa a origem dos dados. |
+| Requisito                                                 | Implementação ou instrução                                                                                                                    |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| React Native com JavaScript e Expo                        | `package.json`, `app.json`, `index.js` e `App.js`; Node 24 em `.nvmrc`.                                                                       |
+| Estrutura simples em MVVM                                 | Pastas `src/models`, `src/viewmodels` e `src/views`.                                                                                          |
+| Inicialização e integração da tela                        | `App.js`.                                                                                                                                     |
+| Model independente da interface                           | `src/models/frankfurter.js`: requisições, HTTP, JSON e validação dos dados.                                                                   |
+| View sem requisições ou cálculo de conversão              | `ConverterScreen.js`, `CurrencyPicker.js`, `ConversionResult.js` e `ConversionHistory.js`: renderização e eventos.                            |
+| ViewModel com React Hooks                                 | `useConverterViewModel.js`: estados, efeitos, validação e coordenação.                                                                        |
+| Regras e formatação separadas da tela                     | `src/viewmodels/conversion.js`.                                                                                                               |
+| Convenções de código                                      | ESLint e Prettier; `npm run format` aplica a formatação e `npm run format:check` verifica.                                                    |
+| Cores compartilhadas da interface                         | `src/views/colors.js`.                                                                                                                        |
+| Instruções de instalação, navegador e plataformas nativas | `README.md`.                                                                                                                                  |
+| Código no GitHub                                          | Repositório `TheusBertelli/conversor-de-moedas`; commits e envio são verificados à parte.                                                     |
+| Capturas de tela                                          | Capturas do autor em `docs/screenshots/conversao-autor.png`, `validacao-autor.png` e `historico-favoritos-autor.png`, apresentadas no README. |
 
 ## Tela e fluxo de conversão
 
@@ -108,8 +108,18 @@ Os testes automatizados usam respostas controladas. Acesso real à Frankfurter e
 ## Verificação da revisão visual
 
 - `npm run check` verifica a formatação, executa ESLint, roda os 78 testes de Model, ViewModel, validação e formatação e gera a versão web.
-- `npm run test:e2e` executa 16 cenários no Chromium em larguras de celular e desktop, com respostas controladas da API; capturas no README têm a mesma origem.
+- `npm run test:e2e` executa 16 cenários no Chromium em larguras de celular e desktop, com respostas controladas da API; somente `conversao-mobile.png` e `conversao-desktop.png` são geradas por esses testes.
 - A revisão usa fundo branco, formulário centralizado, bordas cinza e ações azuis. O resultado fica junto do formulário, sem slogans ou etapas numeradas. As referências oficiais estão no README.
 - O projeto inicial Expo foi aberto no Chromium e os bundles Hermes de Android e iOS foram gerados na primeira entrega. Isso não equivale à instalação ou execução do novo layout em um aparelho.
 - A consulta real à Frankfurter foi tentada e bloqueada pela política de rede do ambiente (HTTPS CONNECT 403). `npm run test:api` permite repetir a consulta após liberar `api.frankfurter.dev`.
 - Sem emulador Android, simulador iOS ou dispositivo conectado nesta máquina. A conferência nativa permanece na lista acima.
+
+## Capturas fornecidas pelo autor
+
+As imagens recebidas foram incluídas sem alteração em `docs/screenshots/` e apresentadas no README:
+
+- `conversao-autor.png`: conversão de 100 USD para R$ 555,53, com taxa de 5,5553 BRL por USD e referência de 11/11/2026.
+- `validacao-autor.png`: entrada não numérica e mensagem de orientação, sem resultado de conversão.
+- `historico-favoritos-autor.png`: par salvo nos favoritos e conversão registrada no histórico.
+
+Essas capturas atendem ao entregável visual do enunciado. As verificações de rede e de execução em dispositivo nesta máquina continuam registradas separadamente acima.

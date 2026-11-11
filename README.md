@@ -102,7 +102,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Os mesmos cenários rodam em larguras de celular e desktop. Para atualizar as capturas do README no Linux/macOS, execute `UPDATE_SCREENSHOTS=1 npm run test:e2e`. Em uma máquina que já tenha Chromium, é possível indicar o executável com `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
+Os mesmos cenários rodam em larguras de celular e desktop. Para atualizar as capturas dos testes automatizados no Linux/macOS, execute `UPDATE_SCREENSHOTS=1 npm run test:e2e`. Em uma máquina que já tenha Chromium, é possível indicar o executável com `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
 
 Para verificar o acesso à API real, sem respostas simuladas, use Node 24 e execute:
 
@@ -123,10 +123,28 @@ Referências consultadas:
 
 ## Capturas de tela
 
-Capturas da versão web em largura mobile e desktop, usando respostas controladas de teste. Elas demonstram a interface e o fluxo de conversão; os valores exibidos não devem ser usados como cotações reais.
+Capturas fornecidas pelo autor durante o uso da versão web do aplicativo.
 
-![Conversão em largura mobile](docs/screenshots/conversao-mobile.png)
+### Conversão de moedas
 
-![Conversão em largura desktop](docs/screenshots/conversao-desktop.png)
+Conversão de 100 USD para BRL, com o resultado, a taxa utilizada e a data de referência.
+
+![Conversão de 100 USD para BRL com taxa e data de referência](docs/screenshots/conversao-autor.png)
+
+### Validação de entrada
+
+Ao digitar um texto no campo de valor, o aplicativo orienta o usuário e não apresenta um resultado de conversão.
+
+![Mensagem de validação ao informar um valor não numérico](docs/screenshots/validacao-autor.png)
+
+### Favoritos e histórico
+
+Par USD → BRL salvo nos favoritos e conversão registrada no histórico da sessão.
+
+![Par favorito e histórico da conversão](docs/screenshots/historico-favoritos-autor.png)
+
+### Capturas dos testes automatizados
+
+As imagens de [largura mobile](docs/screenshots/conversao-mobile.png) e [desktop](docs/screenshots/conversao-desktop.png) usam respostas controladas de teste. O comando `UPDATE_SCREENSHOTS=1 npm run test:e2e` atualiza apenas esses dois arquivos; as capturas fornecidas pelo autor são preservadas.
 
 As instruções específicas desta máquina estão em [docs/ambiente-nuvem.md](docs/ambiente-nuvem.md).
