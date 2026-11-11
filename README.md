@@ -142,9 +142,3 @@ Ao digitar um texto no campo de valor, o aplicativo orienta o usuário e não ap
 Par USD → BRL salvo nos favoritos e conversão registrada no histórico da sessão.
 
 ![Par favorito e histórico da conversão](docs/screenshots/historico-favoritos-autor.png)
-
-### Capturas dos testes automatizados
-
-As imagens de [largura mobile](docs/screenshots/conversao-mobile.png) e [desktop](docs/screenshots/conversao-desktop.png) usam respostas controladas de teste. O comando `UPDATE_SCREENSHOTS=1 npm run test:e2e` atualiza apenas esses dois arquivos; as capturas fornecidas pelo autor são preservadas.
-
-As instruções específicas desta máquina estão em [docs/ambiente-nuvem.md](docs/ambiente-nuvem.md).
